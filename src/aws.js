@@ -4,8 +4,8 @@ config();
 
 AWS.config.update({
   region: 'us-east-1', // Reemplaza con la región de tu elección
-  accessKeyId: process.env.AWS_ACCESS,
-  secretAccessKey: process.env.AWS_ACCESS_SECRET,
+  accessKeyId: process.env.ACCESS,
+  secretAccessKey: process.env.ACCESS_SECRET,
 });
 
 export default AWS;
