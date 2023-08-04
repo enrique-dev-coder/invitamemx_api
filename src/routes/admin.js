@@ -26,7 +26,7 @@ adminRouter.get('/users', (req, res) => {
 
 adminRouter.post('/user', (req, res) => {
   // Obtener los datos enviados desde el cliente (JSON en este caso)
-  const { nombre, email, cellphone, invitation, invitationLink } = req.body;
+  const { nombre, email, cellphone, invitation } = req.body;
 
   // Validar que los datos requeridos estén presentes en la solicitud
   if (!nombre || !email) {
@@ -45,7 +45,6 @@ adminRouter.post('/user', (req, res) => {
     email: { S: email },
     cellphone: { S: cellphone },
     invitation: { S: invitation },
-    invitationLink: { S: invitationLink },
     // los booleanos se tienen que pasar a strings por cosas de dynamo db
     // policyAccepted: { S: policyAccepted.toString() },
     //  password: { S: 'hashed_password' },
