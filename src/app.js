@@ -2,6 +2,7 @@ import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import adminRouter from './routes/admin.js';
+import inviteRouter from './routes/invites.js';
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(helmet());
 
 //routes
 app.use('/administration', adminRouter);
+app.use('/invitations', inviteRouter);
 
 app.get('/', (req, res) => {
   res.json('hola desde el server');
