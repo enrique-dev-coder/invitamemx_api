@@ -45,7 +45,7 @@ authRouter.post('/login', async (req, res) => {
       invitation: queryResult?.Items[0].invitation.S,
       // TODO agregar lo de si es admin
     };
-    const token = jwt.sign(user, secretJwt, { expiresIn: '3' });
+    const token = jwt.sign(user, secretJwt, { expiresIn: '30d' });
 
     return res.json({ token });
   } catch (error) {
