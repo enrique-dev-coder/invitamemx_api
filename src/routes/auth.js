@@ -23,17 +23,14 @@ authRouter.post('/login', async (req, res) => {
       },
     };
     const queryResult = await dynamodb.query(queryParams).promise();
-
     if (!queryResult.Items) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
-
     const storedPassword = queryResult?.Items[0].password.S;
 
     // Verificar la contraseña (modo manual)
 
     const didPasswordMatch = password === storedPassword;
-
     if (!didPasswordMatch) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
@@ -42,9 +39,10 @@ authRouter.post('/login', async (req, res) => {
     const user = {
       id: queryResult?.Items[0].id.S,
       email: queryResult?.Items[0].email.S,
-      invitation: queryResult?.Items[0].invitation.S,
-      // TODO agregar lo de si es admin
+      invitation: queryResult?.Items[0]?.invitation?.S,
+      admin: queryResult?.Items[0]?.admin?.BOOL,
     };
+
     const token = jwt.sign(user, secretJwt, { expiresIn: '30d' });
 
     return res.json({ token });
