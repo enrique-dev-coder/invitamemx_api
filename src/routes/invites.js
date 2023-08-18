@@ -1,11 +1,14 @@
-import { Router } from 'express';
-import fetch from 'node-fetch';
+import { Router } from "express";
+import fetch from "node-fetch";
+import csv from "csv-parser";
+import multer from "multer";
+import streamifier from "streamifier";
 
 const inviteRouter = Router();
 
-inviteRouter.get('/', async (req, res) => {
+inviteRouter.get("/", async (req, res) => {
   // peticion desde wordpress
-  const response = await fetch('https://invitamemx.com/wp-json/wp/v2/pages');
+  const response = await fetch("https://invitamemx.com/wp-json/wp/v2/pages");
   const data = await response.json();
 
   // devolver lo que necesito
@@ -17,7 +20,7 @@ inviteRouter.get('/', async (req, res) => {
   );
 });
 
-inviteRouter.get('/:name', async (req, res) => {
+inviteRouter.get("/:name", async (req, res) => {
   const { name } = req.params;
   // peticion desde wordpress
   // end point personalizado con plugin
@@ -39,6 +42,32 @@ inviteRouter.get('/:name', async (req, res) => {
       telefono: invitado.form_values?.email,
     }))
   );
+});
+
+// Almacena el archivo en memoria ram para que se acceda
+// de otra forma tendrias que subir el archivo a un server o espacio y pasar la ruta
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+// mandas el archivo
+inviteRouter.post("/guests", upload.single("csvFile"), async (req, res) => {
+  if (!req.file) {
+    return res
+      .status(400)
+      .json({ message: "No se ha proporcionado un archivo CSV" });
+  }
+
+  const csvData = [];
+  // usas el buffer que es el contenido de el archivo en si mismo
+  streamifier
+    .createReadStream(req.file.buffer) // Lee el contenido del archivo en memoria
+    .pipe(csv())
+    .on("data", (row) => {
+      csvData.push(row);
+    })
+    .on("end", () => {
+      res.json(csvData); // Devuelve los datos parseados al cliente
+    });
 });
 
 export default inviteRouter;
